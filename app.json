@@ -1,13 +1,13 @@
 {
   "name": "kintai-api",
-  "website": "https://github.com/hitode909/kintai-api"
+  "website": "https://github.com/hitode909/kintai-api",
   "repository": "https://github.com/hitode909/kintai-api",
   "env": {
     "KINTAI_URL": {
-      "description": "The URL to record your time card. like this: https://****H.HTML",
+      "description": "The URL to record your time card. like this: https://****H.HTML"
     },
     "STAFF_ID": {
-      "description": "Your Staff ID.",
+      "description": "Your Staff ID."
     },
     "PASSWORD": {
       "description": "The Password to login.",
