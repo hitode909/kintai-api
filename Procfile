@@ -1,0 +1,1 @@
+web: phantomjs lib/kintai.js server
