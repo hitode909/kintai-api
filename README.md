@@ -1,8 +1,8 @@
+# Kintai API - The e-asp wrapper
+
+Kintai API allows you to punch timecards via simple HTTP request.
+
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-# Kintai API
-
-The e-asp wrapper
 
 # Endpoints
 
@@ -11,11 +11,6 @@ GET /up     : Start working
 GET /down   : Stop working
 GET /report : Print the report
 ```
-
-# WARNING
-
-Don't tell the URL to others.
-
 
 # Run Locally
 
@@ -35,3 +30,8 @@ heroku config:set STAFF_ID="***"
 heroku config:set PASSWORD="***"
 git push heroku master
 ```
+
+## WARNING
+
+Don't tell the deployed URL to others. Anyone who knows the URL can punch your timecard.
+
