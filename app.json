@@ -10,8 +10,7 @@
       "description": "Your Staff ID."
     },
     "PASSWORD": {
-      "description": "The Password to login.",
-      "generator": "secret"
+      "description": "The Password to login."
     }
   },
   "buildpacks": [
