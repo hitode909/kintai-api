@@ -269,7 +269,7 @@ class KintaiServer {
     }
 
     setupCompleted () {
-        return this.kintai_url && this.staff_id && this.password;
+        return this.kintai_url && this.staff_id && this.password && this.api_token;
     }
 
     authorize (parameters, response, whenSuccess) {
