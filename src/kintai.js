@@ -223,10 +223,11 @@ class Report extends KintaiClient {
 const system = phantomjsRequire('system');
 
 class KintaiServer {
-    constructor (KINTAI_URL, STAFF_ID, PASSWORD, PORT) {
+    constructor (KINTAI_URL, KINTAI_STAFF_ID, KINTAI_PASSWORD, API_TOKEN, PORT) {
         this.kintai_url = KINTAI_URL;
-        this.staff_id = STAFF_ID;
-        this.password = PASSWORD;
+        this.staff_id = KINTAI_STAFF_ID;
+        this.password = KINTAI_PASSWORD;
+        this.api_token = API_TOKEN;
         this.port = PORT;
     }
 
@@ -236,22 +237,26 @@ class KintaiServer {
         server.listen(
             this.port,
             (request, response) => {
+                const segments = request.url.split(/\?/);
+                const path = segments[0];
+                const parameters = segments[1];
+
                 const controllers = {
                     '/': () => {
                         this.performRoot(response);
                     },
                     '/up': () => {
-                        this.performUp(response);
+                        this.authorize(parameters, response, () => this.performUp(response));
                     },
                     '/down': () => {
-                        this.performDown(response);
+                        this.authorize(parameters, response, () => this.performDown(response));
                     },
                     '/report': () => {
-                        this.performReport(response);
+                        this.authorize(parameters, response, () => this.performReport(response));
                     },
                 };
 
-                const controller = controllers[request.url];
+                const controller = controllers[path];
                 if (!controller) {
                     this.perform404(response);
                     return;
@@ -265,6 +270,17 @@ class KintaiServer {
 
     setupCompleted () {
         return this.kintai_url && this.staff_id && this.password;
+    }
+
+    authorize (parameters, response, whenSuccess) {
+        if (parameters !== `api_token=${this.api_token}`) {
+            response.statusCode = 400;
+            response.setHeader('Content-Type', 'text/plain; charset=utf-8');
+            response.write('?api_token=*** required');
+            response.close();
+            return;
+        }
+        whenSuccess();
     }
 
     performKintai (job, response) {
@@ -295,11 +311,15 @@ Welcome, ${this.staff_id}!
 `);
         } else {
             const message = `# Kintai API
-Set following variables at heroku Dashboard (https://dashboard.heroku.com/).
+Set following kintai variables at heroku Dashboard (https://dashboard.heroku.com/).
 
     KINTAI_URL='https://***'
-    STAFF_ID='***'
-    PASSWORD='***'
+    KINTAI_STAFF_ID='***'
+    KINTAI_PASSWORD='***'
+
+And you must set the API_TOKEN for authorization.
+
+    API_TOKEN='***'
 `;
             response.write(message);
         }
@@ -328,5 +348,5 @@ Set following variables at heroku Dashboard (https://dashboard.heroku.com/).
     }
 };
 
-const server = new KintaiServer(system.env['KINTAI_URL'], system.env['STAFF_ID'], system.env['PASSWORD'], system.env['PORT']);
+const server = new KintaiServer(system.env['KINTAI_URL'], system.env['KINTAI_STAFF_ID'], system.env['KINTAI_PASSWORD'], system.env['API_TOKEN'], system.env['PORT']);
 server.run();

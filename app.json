@@ -6,13 +6,16 @@
     "KINTAI_URL": {
       "description": "The URL to record your time card. like this: https://****H.HTML"
     },
-    "STAFF_ID": {
+    "KINTAI_STAFF_ID": {
       "description": "Your Staff ID."
     },
-    "PASSWORD": {
+    "KINTAI_PASSWORD": {
       "description": "The Password to login."
-    }
-  },
+    },
+    "API_TOKEN": {
+      "description": "API Token to authorize. Example: /up?api_key=12345",
+      "generator": "secret"
+    },
   "buildpacks": [
     {
       "url": "https://github.com/stomita/heroku-buildpack-phantomjs"
