@@ -15,7 +15,8 @@
     "API_TOKEN": {
       "description": "API Token to authorize. Example: /up?api_key=12345",
       "generator": "secret"
-    },
+    }
+  }
   "buildpacks": [
     {
       "url": "https://github.com/stomita/heroku-buildpack-phantomjs"
