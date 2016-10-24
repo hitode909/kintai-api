@@ -238,11 +238,41 @@ class StatsReport extends Report {
                     } else {
                         report[key] = values[0];
                     }
-                    console.log(`${key} = ${v}`);
                 } else {
                     key = v;
                 }
             });
+
+            const collectMonthly = () => {
+                const days_table = document.querySelector('#DUM_EZZOPCK-0001').parentNode.parentNode.parentNode.parentNode;
+
+                const result = [];
+                Array.prototype.forEach.call(days_table.children, day => {
+                    // tdを含まないtd
+                    const columns = [];
+                    Array.prototype.forEach.call(day.querySelector('tr').querySelectorAll('td'), (td) => {
+                        if (!td.querySelector('td')) {
+                            columns.push(td);
+                        }
+                    });
+
+                    if (columns.length < 10) return;
+
+                    // 日付, 打刻開始, 打刻終了, 開始時刻, 終了時刻
+                    const date  = normalize(columns[1].textContent);
+                    const up1   = normalize(columns[6].textContent);
+                    const down1 = normalize(columns[7].textContent);
+
+                    const up2   = normalize(columns[8].textContent);
+                    const down2 = normalize(columns[9].textContent);
+
+                    result.push([date, up1, down1, up2, down2].map(v => v.length > 0 ? v : null ));
+                });
+                return result;
+            };
+
+            report['月報'] = collectMonthly();
+
             return JSON.stringify(report);
         });
         done(result);
