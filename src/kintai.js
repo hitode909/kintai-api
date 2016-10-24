@@ -220,6 +220,35 @@ class Report extends KintaiClient {
     }
 }
 
+class StatsReport extends Report {
+    collectReport (page, done) {
+        const result = page.evaluate(() => {
+            const normalize = text => (text.replace(/\s+/, ' ').replace(/^\s*/, '')).replace(/\s*$/, '');
+
+            const stats_table = document.querySelectorAll('table')[13];
+            const cells = stats_table.querySelectorAll('td');
+            const report = {};
+            let key;
+            Array.prototype.forEach.call(cells, cell => {
+                var v = normalize(cell.textContent);
+                if (v.match(/^[\d.()\/ ]+$/)) {
+                    const values = v.split(/[()\/ ]/).filter(v => v.length > 0).map(v => + v);
+                    if (values.length > 1) {
+                        report[key] = values
+                    } else {
+                        report[key] = values[0];
+                    }
+                    console.log(`${key} = ${v}`);
+                } else {
+                    key = v;
+                }
+            });
+            return JSON.stringify(report);
+        });
+        done(result);
+    }
+}
+
 const system = phantomjsRequire('system');
 
 class KintaiServer {
@@ -253,6 +282,9 @@ class KintaiServer {
                     },
                     '/report': () => {
                         this.authorize(parameters, response, () => this.performReport(response));
+                    },
+                    '/stats': () => {
+                        this.authorize(parameters, response, () => this.performStatsReport(response));
                     },
                 };
 
@@ -338,6 +370,11 @@ And you must set the API_TOKEN for authorization.
 
     performReport (response) {
         const report = new Report(this.kintai_url, this.staff_id, this.password);
+        this.performKintai(report, response);
+    }
+
+    performStatsReport (response) {
+        const report = new StatsReport(this.kintai_url, this.staff_id, this.password);
         this.performKintai(report, response);
     }
 
