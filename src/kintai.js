@@ -310,11 +310,11 @@ class KintaiServer {
                     '/down': () => {
                         this.authorize(parameters, response, () => this.performDown(response));
                     },
-                    '/report': () => {
-                        this.authorize(parameters, response, () => this.performReport(response));
-                    },
-                    '/stats': () => {
+                    '/report.json': () => {
                         this.authorize(parameters, response, () => this.performStatsReport(response));
+                    },
+                    '/report.txt': () => {
+                        this.authorize(parameters, response, () => this.performReport(response));
                     },
                 };
 
