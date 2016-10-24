@@ -220,6 +220,65 @@ class Report extends KintaiClient {
     }
 }
 
+class StatsReport extends Report {
+    collectReport (page, done) {
+        const result = page.evaluate(() => {
+            const normalize = text => (text.replace(/\s+/, ' ').replace(/^\s*/, '')).replace(/\s*$/, '');
+
+            const stats_table = document.querySelectorAll('table')[13];
+            const cells = stats_table.querySelectorAll('td');
+            const report = {};
+            let key;
+            Array.prototype.forEach.call(cells, cell => {
+                var v = normalize(cell.textContent);
+                if (v.match(/^[\d.()\/ ]+$/)) {
+                    const values = v.split(/[()\/ ]/).filter(v => v.length > 0).map(v => + v);
+                    if (values.length > 1) {
+                        report[key] = values
+                    } else {
+                        report[key] = values[0];
+                    }
+                } else {
+                    key = v;
+                }
+            });
+
+            const collectMonthly = () => {
+                const days_table = document.querySelector('#DUM_EZZOPCK-0001').parentNode.parentNode.parentNode.parentNode;
+
+                const result = [];
+                Array.prototype.forEach.call(days_table.children, day => {
+                    // tdを含まないtd
+                    const columns = [];
+                    Array.prototype.forEach.call(day.querySelector('tr').querySelectorAll('td'), (td) => {
+                        if (!td.querySelector('td')) {
+                            columns.push(td);
+                        }
+                    });
+
+                    if (columns.length < 10) return;
+
+                    // 日付, 打刻開始, 打刻終了, 開始時刻, 終了時刻
+                    const date  = normalize(columns[1].textContent);
+                    const up1   = normalize(columns[6].textContent);
+                    const down1 = normalize(columns[7].textContent);
+
+                    const up2   = normalize(columns[8].textContent);
+                    const down2 = normalize(columns[9].textContent);
+
+                    result.push([date, up1, down1, up2, down2].map(v => v.length > 0 ? v : null ));
+                });
+                return result;
+            };
+
+            report['月報'] = collectMonthly();
+
+            return JSON.stringify(report);
+        });
+        done(result);
+    }
+}
+
 const system = phantomjsRequire('system');
 
 class KintaiServer {
@@ -253,6 +312,9 @@ class KintaiServer {
                     },
                     '/report': () => {
                         this.authorize(parameters, response, () => this.performReport(response));
+                    },
+                    '/stats': () => {
+                        this.authorize(parameters, response, () => this.performStatsReport(response));
                     },
                 };
 
@@ -338,6 +400,11 @@ And you must set the API_TOKEN for authorization.
 
     performReport (response) {
         const report = new Report(this.kintai_url, this.staff_id, this.password);
+        this.performKintai(report, response);
+    }
+
+    performStatsReport (response) {
+        const report = new StatsReport(this.kintai_url, this.staff_id, this.password);
         this.performKintai(report, response);
     }
 

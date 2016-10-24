@@ -27,6 +27,7 @@ With deploy to heroku button, the API token is auto-generated. You can get it at
 GET /up?api_token=***     : Start working
 GET /down?api_token=***   : Stop working
 GET /report?api_token=*** : Print the report
+GET /stats?api_token=***  : Print the report(JSON)
 ```
 
 # Get the Kintai Button
