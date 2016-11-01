@@ -223,7 +223,7 @@ class Report extends KintaiClient {
 class StatsReport extends Report {
     collectReport (page, done) {
         const result = page.evaluate(() => {
-            const normalize = text => (text.replace(/\s+/, ' ').replace(/^\s*/, '')).replace(/\s*$/, '');
+            const normalize = text => (text.replace(/\s+/g, ' ').replace(/^\s*/g, '')).replace(/\s*$/g, '');
 
             const stats_table = document.querySelectorAll('table')[13];
             const cells = stats_table.querySelectorAll('td');
@@ -234,7 +234,7 @@ class StatsReport extends Report {
                 if (v.match(/^[\d.()\/ ]+$/)) {
                     const values = v.split(/[()\/ ]/).filter(v => v.length > 0).map(v => + v);
                     if (values.length > 1) {
-                        report[key] = values
+                        report[key] = values;
                     } else {
                         report[key] = values[0];
                     }
